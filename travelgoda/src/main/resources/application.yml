@@ -35,11 +35,5 @@ open:
     serverUrl: http://localhost:9999
     serverName: Server Test
 
-regera:
-  outbound:
-    client_secret: ${CLIENT_SECRET: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}
-    client_id: ${CLIENT_ID:957159199573-o3sh3oo2anl7rmmsvup64cj0j78m0i8i.apps.googleusercontent.com}
-    redirect_uri: http://localhost:3000/authenticate
-    grant_type: authorization_code
 
 
