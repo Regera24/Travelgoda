@@ -1,0 +1,45 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:sqlserver://localhost:1433;databaseName=Travelgoda_DB;encrypt=true;trustServerCertificate=true}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:12345}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServer2012Dialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: keepme2401@gmail.com
+    password: tccpotdwysrognyx
+
+app:
+  jwtExpirationMs: 2592000
+  jwtSecret: T7EOnmBnmqvRABNZf9TsmuHLyFmauuAV66Nd8OdaTlFLBTocK2nH0NKIcwLpjJAosgGs8tV2BuuIQ2doKjiFfA==
+  jwtRefresh: T9EOnmBnmqvRABNZf9TsmuHLyFmauuAV66Nd8OdaTlFLBTocK2nH0NKIcwLpjJAosgGs8tV2BuuIQ2doKjiFfA==
+  jwtRefreshExpirationMs: 200000000
+
+cloudinary:
+  cloud-name: do9tp2bph
+  api-key: 637613168259424
+  api-secret: ryWJdtT3C2tSRVrPmxuytLiiBl0
+
+open:
+  api:
+    title: AZSchedule API Document
+    description: API for AZSchedule document
+    version: v1.0.0
+    serverUrl: http://localhost:9999
+    serverName: Server Test
+
+regera:
+  outbound:
+    client_secret: ${CLIENT_SECRET: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}
+    client_id: ${CLIENT_ID:957159199573-o3sh3oo2anl7rmmsvup64cj0j78m0i8i.apps.googleusercontent.com}
+    redirect_uri: http://localhost:3000/authenticate
+    grant_type: authorization_code
+
+

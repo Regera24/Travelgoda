@@ -1,0 +1,127 @@
+/* Card Component Styles */
+.card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+}
+
+/* Card Variants */
+.card-default {
+  background-color: #ffffff;
+}
+
+.card-primary {
+  background: linear-gradient(135deg, #e6f2ff 0%, #b3d9ff 100%);
+  border-color: #80c0ff;
+}
+
+.card-bordered {
+  border: 2px solid #0073e6;
+}
+
+.card-elevated {
+  border: none;
+}
+
+/* Card Padding */
+.card-padding-none {
+  padding: 0;
+}
+
+.card-padding-small {
+  padding: 1rem;
+}
+
+.card-padding-medium {
+  padding: 1.5rem;
+}
+
+.card-padding-large {
+  padding: 2rem;
+}
+
+/* Card Shadow */
+.card-shadow-none {
+  box-shadow: none;
+}
+
+.card-shadow-small {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.card-shadow-medium {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-shadow-large {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Card States */
+.card-hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 115, 230, 0.15);
+}
+
+.card-clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.card-clickable:hover {
+  border-color: #0073e6;
+  box-shadow: 0 8px 16px rgba(0, 115, 230, 0.12);
+}
+
+.card-clickable:active {
+  transform: translateY(1px);
+}
+
+/* Card Sections */
+.card-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: #212529;
+}
+
+.card-body {
+  padding: 1.5rem;
+  color: #495057;
+  line-height: 1.6;
+}
+
+.card-footer {
+  padding: 1.5rem;
+  border-top: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+}
+
+/* Card Image */
+.card-image {
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card-hoverable:hover .card-image img,
+.card-clickable:hover .card-image img {
+  transform: scale(1.05);
+}
+
+/* Card with no padding for full-width images */
+.card-padding-none .card-header,
+.card-padding-none .card-body,
+.card-padding-none .card-footer {
+  padding: 1.5rem;
+}
