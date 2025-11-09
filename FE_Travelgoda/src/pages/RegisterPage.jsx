@@ -143,6 +143,7 @@ const RegisterPage = () => {
                   <option value="">-- Chọn vai trò --</option>
                   <option value={USER_ROLES.CUSTOMER}>Khách hàng</option>
                   <option value={USER_ROLES.TOUR_PROVIDER}>Nhà cung cấp tour</option>
+                  <option value={USER_ROLES.TOUR_GUIDE}>Hướng dẫn viên du lịch</option>
                 </select>
               </div>
               {touched.role && errors.role && (

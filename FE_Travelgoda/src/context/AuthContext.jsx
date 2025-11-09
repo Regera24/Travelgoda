@@ -106,6 +106,11 @@ export const AuthProvider = ({ children }) => {
     return user?.role === USER_ROLES.TOUR_PROVIDER;
   }, [user]);
 
+  // Check if user is tour guide
+  const isTourGuide = useCallback(() => {
+    return user?.role === USER_ROLES.TOUR_GUIDE;
+  }, [user]);
+
   const value = {
     user,
     isAuthenticated,
@@ -118,6 +123,7 @@ export const AuthProvider = ({ children }) => {
     isAdmin,
     isCustomer,
     isTourProvider,
+    isTourGuide,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

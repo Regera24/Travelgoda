@@ -13,7 +13,7 @@ export const API_ENDPOINTS = {
     verifyEmail: `${API_BASE_URL}/auth/verify-email`,
     profile: `${API_BASE_URL}/auth/profile`,
   },
-
+  
   // Users
   users: {
     list: `${API_BASE_URL}/users`,
@@ -21,7 +21,7 @@ export const API_ENDPOINTS = {
     update: (id) => `${API_BASE_URL}/users/${id}`,
     delete: (id) => `${API_BASE_URL}/users/${id}`,
   },
-
+  
   // Tours
   tours: {
     list: `${API_BASE_URL}/tours`,
@@ -31,8 +31,11 @@ export const API_ENDPOINTS = {
     popular: `${API_BASE_URL}/tours/popular`,
     categories: `${API_BASE_URL}/tours/categories`,
     byCategory: (categoryId) => `${API_BASE_URL}/tours/category/${categoryId}`,
+    // Tour guide specific endpoints
+    guideInfo: (tourId, guideId) => `${API_BASE_URL}/tours/${tourId}/guide/${guideId}`,
+    guideList: (guideId) => `${API_BASE_URL}/tours/guide/${guideId}`,
   },
-
+  
   // Bookings
   bookings: {
     list: `${API_BASE_URL}/bookings`,
@@ -43,6 +46,21 @@ export const API_ENDPOINTS = {
     myBookings: `${API_BASE_URL}/bookings/my-bookings`,
   },
 
+  // Reports
+  reports: {
+    generate: `${API_BASE_URL}/reports/generate`,
+    byUser: (userId) => `${API_BASE_URL}/reports/user/${userId}`,
+    detail: (reportId) => `${API_BASE_URL}/reports/${reportId}`,
+  },
+
+  // Tickets
+  tickets: {
+    unassigned: `${API_BASE_URL}/tickets/unassigned`,
+    assign: `${API_BASE_URL}/tickets/assign`,
+    byAgent: (agentId) => `${API_BASE_URL}/tickets/agent/${agentId}`,
+    detail: (ticketId) => `${API_BASE_URL}/tickets/${ticketId}`,
+  },
+
   // Payments
   payments: {
     create: `${API_BASE_URL}/payments`,
@@ -50,7 +68,7 @@ export const API_ENDPOINTS = {
     methods: `${API_BASE_URL}/payments/methods`,
     history: `${API_BASE_URL}/payments/history`,
   },
-
+  
   // Reviews
   reviews: {
     list: `${API_BASE_URL}/reviews`,
@@ -59,7 +77,7 @@ export const API_ENDPOINTS = {
     delete: (id) => `${API_BASE_URL}/reviews/${id}`,
     byTour: (tourId) => `${API_BASE_URL}/reviews/tour/${tourId}`,
   },
-
+  
   // Promotions
   promotions: {
     list: `${API_BASE_URL}/promotions`,
@@ -67,14 +85,14 @@ export const API_ENDPOINTS = {
     validate: `${API_BASE_URL}/promotions/validate`,
     active: `${API_BASE_URL}/promotions/active`,
   },
-
+  
   // Wishlist
   wishlist: {
     list: `${API_BASE_URL}/wishlist`,
     add: `${API_BASE_URL}/wishlist`,
     remove: (id) => `${API_BASE_URL}/wishlist/${id}`,
   },
-
+  
   // Support
   support: {
     tickets: `${API_BASE_URL}/support/tickets`,
@@ -82,7 +100,7 @@ export const API_ENDPOINTS = {
     ticketDetail: (id) => `${API_BASE_URL}/support/tickets/${id}`,
     faq: `${API_BASE_URL}/support/faq`,
   },
-
+  
   // Notifications
   notifications: {
     list: `${API_BASE_URL}/notifications`,
