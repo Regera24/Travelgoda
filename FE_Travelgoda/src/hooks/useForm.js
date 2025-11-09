@@ -1,37 +1,65 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 export const useForm = (initialValues = {}, validationRules = {}) => {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Store refs to avoid recreating callbacks
+  const valuesRef = useRef(values);
+  valuesRef.current = values;
+  
+  const validationRulesRef = useRef(validationRules);
+  validationRulesRef.current = validationRules;
 
-  // Handle input change
-  const handleChange = useCallback((name, value) => {
+  // Handle input change - STABLE, no dependencies
+  const handleChange = useCallback((nameOrEvent, value) => {
+    let name, newValue;
+    
+    if (typeof nameOrEvent === 'object' && nameOrEvent?.target) {
+      name = nameOrEvent.target.name;
+      newValue = nameOrEvent.target.value;
+    } else {
+      name = nameOrEvent;
+      newValue = value;
+    }
+    
     setValues((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: newValue,
     }));
 
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: null,
-      }));
-    }
-  }, [errors]);
+    setErrors((prev) => {
+      if (prev[name]) {
+        const { [name]: _removed, ...rest } = prev;
+        return rest;
+      }
+      return prev;
+    });
+  }, []);
 
-  // Handle input blur
-  const handleBlur = useCallback((name) => {
+  // Handle input blur - STABLE, no dependencies
+  const handleBlur = useCallback((nameOrEvent) => {
+    let name;
+    
+    if (typeof nameOrEvent === 'object' && nameOrEvent?.target) {
+      name = nameOrEvent.target.name;
+    } else {
+      name = nameOrEvent;
+    }
+    
     setTouched((prev) => ({
       ...prev,
       [name]: true,
     }));
 
-    // Validate field on blur
-    if (validationRules[name]) {
-      const error = validationRules[name](values[name], values);
+    // Validate on blur
+    const rules = validationRulesRef.current;
+    const currentValues = valuesRef.current;
+    
+    if (rules[name]) {
+      const error = rules[name](currentValues[name], currentValues);
       if (error) {
         setErrors((prev) => ({
           ...prev,
@@ -39,14 +67,16 @@ export const useForm = (initialValues = {}, validationRules = {}) => {
         }));
       }
     }
-  }, [validationRules, values]);
+  }, []);
 
-  // Validate all fields
+  // Validate all fields - STABLE, no dependencies
   const validate = useCallback(() => {
+    const rules = validationRulesRef.current;
+    const currentValues = valuesRef.current;
     const newErrors = {};
-
-    Object.keys(validationRules).forEach((fieldName) => {
-      const error = validationRules[fieldName](values[fieldName], values);
+    
+    Object.keys(rules).forEach((fieldName) => {
+      const error = rules[fieldName](currentValues[fieldName], currentValues);
       if (error) {
         newErrors[fieldName] = error;
       }
@@ -54,33 +84,41 @@ export const useForm = (initialValues = {}, validationRules = {}) => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }, [validationRules, values]);
+  }, []);
 
-  // Handle form submit
-  const handleSubmit = useCallback(async (onSubmit) => {
-    // Mark all fields as touched
-    const allTouched = Object.keys(values).reduce((acc, key) => {
-      acc[key] = true;
-      return acc;
-    }, {});
-    setTouched(allTouched);
+  // Handle form submit - STABLE, no dependencies
+  const handleSubmit = useCallback((onSubmit) => {
+    return async (e) => {
+      if (e && e.preventDefault) {
+        e.preventDefault();
+      }
+      
+      const currentValues = valuesRef.current;
+      
+      // Mark all fields as touched
+      const allTouched = Object.keys(currentValues).reduce((acc, key) => {
+        acc[key] = true;
+        return acc;
+      }, {});
+      setTouched(allTouched);
 
-    // Validate
-    const isValid = validate();
-    if (!isValid) {
-      return;
-    }
+      // Validate
+      const isValid = validate();
+      if (!isValid) {
+        return;
+      }
 
-    // Submit
-    setIsSubmitting(true);
-    try {
-      await onSubmit(values);
-    } catch (error) {
-      console.error('Form submission error:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [values, validate]);
+      // Submit
+      setIsSubmitting(true);
+      try {
+        await onSubmit(currentValues);
+      } catch (error) {
+        console.error('Form submission error:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+  }, [validate]);
 
   // Reset form
   const reset = useCallback(() => {
@@ -111,13 +149,13 @@ export const useForm = (initialValues = {}, validationRules = {}) => {
     }));
   }, []);
 
-  // Get field props
+  // Get field props - DO NOT use this in render, will cause infinite loop
   const getFieldProps = useCallback((name) => {
     return {
       name,
       value: values[name] ?? '',
-      onChange: (e) => handleChange(name, e.target.value),
-      onBlur: () => handleBlur(name),
+      onChange: handleChange,
+      onBlur: handleBlur,
     };
   }, [values, handleChange, handleBlur]);
 

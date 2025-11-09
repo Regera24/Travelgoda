@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Package, 
@@ -17,7 +17,13 @@ import './DashboardLayout.css';
 const DashboardLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   const menuItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -65,7 +71,7 @@ const DashboardLayout = () => {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="sidebar-item" onClick={logout}>
+          <button className="sidebar-item" onClick={handleLogout}>
             <LogOut size={20} />
             {!sidebarCollapsed && <span>Logout</span>}
           </button>
@@ -83,9 +89,9 @@ const DashboardLayout = () => {
               <span className="notification-badge">3</span>
             </button>
             <div className="user-info">
-              <span className="user-name">{user?.fullName || user?.email}</span>
+              <span className="user-name">{user?.username || 'User'}</span>
               <div className="user-avatar">
-                {user?.fullName?.charAt(0).toUpperCase() || 'U'}
+                {user?.username?.charAt(0).toUpperCase() || 'U'}
               </div>
             </div>
           </div>
