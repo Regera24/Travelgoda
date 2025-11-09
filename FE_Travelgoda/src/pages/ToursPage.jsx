@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { 
-  Search, 
-  Filter, 
-  MapPin, 
-  Star, 
+import {
+  Search,
+  Filter,
+  MapPin,
+  Star,
   Clock,
   DollarSign,
   ChevronDown,
@@ -44,6 +44,7 @@ const ToursPage = () => {
       reviews: 127,
       category: 'Beach',
       featured: true,
+      status: "PUBLISHED"
     },
     {
       id: 2,
@@ -55,6 +56,7 @@ const ToursPage = () => {
       rating: 4.9,
       reviews: 203,
       category: 'Nature',
+      status: "PUBLISHED"
     },
     {
       id: 3,
@@ -66,6 +68,7 @@ const ToursPage = () => {
       rating: 4.7,
       reviews: 156,
       category: 'Cultural',
+      status: "PUBLISHED"
     },
     {
       id: 4,
@@ -77,6 +80,7 @@ const ToursPage = () => {
       rating: 4.6,
       reviews: 98,
       category: 'City',
+      status: "PUBLISHED"
     },
     {
       id: 5,
@@ -88,6 +92,7 @@ const ToursPage = () => {
       rating: 4.5,
       reviews: 89,
       category: 'Nature',
+      status: "PUBLISHED"
     },
     {
       id: 6,
@@ -99,6 +104,7 @@ const ToursPage = () => {
       rating: 4.6,
       reviews: 142,
       category: 'Beach',
+      status: "PUBLISHED"
     },
   ];
 
@@ -162,7 +168,7 @@ const ToursPage = () => {
             />
           </div>
 
-          <button 
+          <button
             className="filter-toggle-btn"
             onClick={() => setShowFilters(!showFilters)}
           >
@@ -170,7 +176,7 @@ const ToursPage = () => {
             Bộ Lọc
           </button>
 
-          <select 
+          <select
             className="sort-select"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
@@ -223,7 +229,7 @@ const ToursPage = () => {
 
             <div className="filter-group">
               <label className="filter-label">Mức giá</label>
-              <select 
+              <select
                 className="filter-select"
                 value={filters.priceRange}
                 onChange={(e) => handleFilterChange('priceRange', e.target.value)}
@@ -238,7 +244,7 @@ const ToursPage = () => {
 
             <div className="filter-group">
               <label className="filter-label">Thời gian</label>
-              <select 
+              <select
                 className="filter-select"
                 value={filters.duration}
                 onChange={(e) => handleFilterChange('duration', e.target.value)}
@@ -274,9 +280,9 @@ const ToursPage = () => {
               </div>
             </div>
 
-            <Button 
-              variant="outline" 
-              fullWidth 
+            <Button
+              variant="outline"
+              fullWidth
               onClick={clearFilters}
             >
               Xóa Bộ Lọc
@@ -285,10 +291,18 @@ const ToursPage = () => {
 
           {/* Tours List */}
           <div className="tours-list">
-            <div className="tours-header">
+            <div className="tours-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <p className="tours-count">
                 Tìm thấy <strong>{tours.length}</strong> tour
               </p>
+              <Button
+                variant="primary"
+                onClick={() => navigate('/admin/manage')}
+                style={{ marginLeft: '10px' }}
+
+              >
+                Quản lý Tour
+              </Button>
             </div>
 
             <div className="tours-grid">
@@ -304,7 +318,7 @@ const ToursPage = () => {
                   <div className="tour-image">
                     <img src={tour.image} alt={tour.name} />
                     {tour.featured && <div className="tour-badge">Nổi Bật</div>}
-                    <button 
+                    <button
                       className={`wishlist-btn ${isInWishlist(tour.id) ? 'active' : ''}`}
                       onClick={(e) => handleWishlist(e, tour)}
                     >
@@ -335,8 +349,8 @@ const ToursPage = () => {
                           {tour.price.toLocaleString('vi-VN')}đ
                         </span>
                       </div>
-                      <Button 
-                        variant="primary" 
+                      <Button
+                        variant="primary"
                         size="small"
                         onClick={(e) => {
                           e.stopPropagation();

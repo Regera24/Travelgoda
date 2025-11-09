@@ -1,0 +1,12 @@
+/* Căn giữa toàn bộ nội dung bảng */
+.tmn-table th,
+.tmn-table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Nếu bạn muốn 1 số cột căn trái thì giữ lại class riêng như sau */
+.tmn-table td.tmn-strong,
+.tmn-table td.tmn-desc {
+  text-align: left; /* Chỉ các cột tên, mô tả vẫn căn trái */
+}

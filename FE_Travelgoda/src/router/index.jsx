@@ -1,8 +1,8 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { MainLayout, DashboardLayout } from '../layouts';
-import { 
-  HomePage, 
-  ToursPage, 
+import {
+  HomePage,
+  ToursPage,
   TourDetailPage,
   LoginPage,
   RegisterPage,
@@ -22,9 +22,11 @@ import {
   DashboardBookingsPage,
   DashboardCustomersPage,
   DashboardSettingsPage,
+  DashboardToursPendingPage,
 } from '../pages/PlaceholderPages';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
+import TourManagement from '../pages/TourManagement';
 
 
 const router = createBrowserRouter([
@@ -96,6 +98,12 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: 'admin/manage',
+        element: (
+          <DashboardLayout />
+        ),
+      },
     ],
   },
   {
@@ -113,6 +121,10 @@ const router = createBrowserRouter([
       {
         path: 'tours',
         element: <DashboardToursPage />,
+      },
+      {
+        path: 'tours2',
+        element: <DashboardToursPendingPage />,
       },
       {
         path: 'bookings',
