@@ -4,7 +4,7 @@ import group4.project.travelgoda.dto.userDTO.UserDTO;
 import group4.project.travelgoda.entity.User;
 import group4.project.travelgoda.mapper.UserMapper;
 import group4.project.travelgoda.repository.UserRepository;
-import group4.project.travelgoda.service.ADMIN.CustomerService;
+import group4.project.travelgoda.service.ADMIN.CustomerAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerAdminServiceImpl implements CustomerAdminService {
 
     private final UserRepository userRepository;
     private final UserMapper mapper;
