@@ -78,9 +78,6 @@ public class Tour {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
-    private Double tourPrice;
-
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<TourDestination> tourDestinations = new HashSet<>();

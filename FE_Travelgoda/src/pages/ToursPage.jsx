@@ -5,11 +5,6 @@ import {
   Filter,
   MapPin,
   Star,
-import {
-  Search,
-  Filter,
-  MapPin,
-  Star,
   Clock,
   DollarSign,
   ChevronDown,
@@ -122,7 +117,6 @@ const ToursPage = () => {
           </div>
 
           <button
-          <button
             className="filter-toggle-btn"
             onClick={() => setShowFilters(!showFilters)}
           >
@@ -130,7 +124,6 @@ const ToursPage = () => {
             Bộ Lọc
           </button>
 
-          <select
           <select
             className="sort-select"
             value={sortBy}
@@ -185,7 +178,6 @@ const ToursPage = () => {
             <div className="filter-group">
               <label className="filter-label">Mức giá</label>
               <select
-              <select
                 className="filter-select"
                 value={filters.priceRange}
                 onChange={(e) => handleFilterChange('priceRange', e.target.value)}
@@ -200,7 +192,6 @@ const ToursPage = () => {
 
             <div className="filter-group">
               <label className="filter-label">Thời gian</label>
-              <select
               <select
                 className="filter-select"
                 value={filters.duration}
@@ -237,9 +228,6 @@ const ToursPage = () => {
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              fullWidth
             <Button
               variant="outline"
               fullWidth
