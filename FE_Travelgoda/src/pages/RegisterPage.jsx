@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Phone, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, Briefcase } from 'lucide-react';
 import { Button, Input } from '../components';
 import { useAuth } from '../hooks';
 import { useForm } from '../hooks';
-import { validateEmail, validatePassword, validatePhone, validateRequired } from '../utils/validators';
+import { validateEmail, validatePassword, validateRequired } from '../utils/validators';
+import { USER_ROLES } from '../config/constants';
+import authService from '../services/authService';
 import './AuthPages.css';
 
 const RegisterPage = () => {
@@ -16,9 +18,9 @@ const RegisterPage = () => {
   const [error, setError] = useState('');
 
   const validationRules = {
-    fullName: (value) => validateRequired(value),
+    username: (value) => validateRequired(value),
     email: (value) => validateRequired(value) || validateEmail(value),
-    phone: (value) => validateRequired(value) || validatePhone(value),
+    role: (value) => validateRequired(value),
     password: (value) => validateRequired(value) || validatePassword(value),
     confirmPassword: (value, values) => {
       if (!value) return 'Vui lòng xác nhận mật khẩu';
@@ -28,7 +30,7 @@ const RegisterPage = () => {
   };
 
   const { values, errors, touched, handleChange, handleBlur, handleSubmit } = useForm(
-    { fullName: '', email: '', phone: '', password: '', confirmPassword: '' },
+    { username: '', email: '', role: '', password: '', confirmPassword: '' },
     validationRules
   );
 
@@ -37,20 +39,39 @@ const RegisterPage = () => {
     setError('');
     
     try {
-      // Mock register - sẽ được thay bằng API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Simulate registration and auto-login
-      login({
+      // Call backend API
+      const result = await authService.register({
+        username: values.username,
+        password: values.password,
         email: values.email,
-        fullName: values.fullName,
-        phone: values.phone,
-        role: 'customer',
+        role: values.role,
       });
       
-      navigate('/');
-    } catch {
-      setError('Đăng ký thất bại. Vui lòng thử lại');
+      if (result.success) {
+        // After successful registration, login automatically
+        const loginResult = await authService.login(values.username, values.password);
+        
+        if (loginResult.success && loginResult.token) {
+          const userData = {
+            username: values.username,
+            email: values.email,
+            role: values.role,
+          };
+          
+          await login(userData, loginResult.token);
+          navigate('/');
+        } else {
+          // Registration successful but auto-login failed, redirect to login page
+          navigate('/login', { 
+            state: { message: 'Đăng ký thành công! Vui lòng đăng nhập.' } 
+          });
+        }
+      } else {
+        setError(result.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+      }
+    } catch (err) {
+      setError('Đăng ký thất bại. Vui lòng thử lại.');
+      console.error('Register error:', err);
     } finally {
       setLoading(false);
     }
@@ -77,15 +98,15 @@ const RegisterPage = () => {
             )}
 
             <Input
-              label="Họ và tên"
+              label="Tên đăng nhập"
               type="text"
-              name="fullName"
-              placeholder="Nguyễn Văn A"
+              name="username"
+              placeholder="username"
               icon={<User size={20} />}
-              value={values.fullName}
+              value={values.username}
               onChange={handleChange}
               onBlur={handleBlur}
-              error={touched.fullName && errors.fullName}
+              error={touched.username && errors.username}
               required
               fullWidth
             />
@@ -104,19 +125,31 @@ const RegisterPage = () => {
               fullWidth
             />
 
-            <Input
-              label="Số điện thoại"
-              type="tel"
-              name="phone"
-              placeholder="0123456789"
-              icon={<Phone size={20} />}
-              value={values.phone}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={touched.phone && errors.phone}
-              required
-              fullWidth
-            />
+            <div className="input-container input-full-width">
+              <label htmlFor="role" className="input-label">
+                Vai trò<span className="input-required">*</span>
+              </label>
+              <div className="input-wrapper">
+                <span className="input-icon input-icon-left"><Briefcase size={20} /></span>
+                <select
+                  id="role"
+                  name="role"
+                  className="input-field input-with-icon-left"
+                  value={values.role}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                >
+                  <option value="">-- Chọn vai trò --</option>
+                  <option value={USER_ROLES.CUSTOMER}>Khách hàng</option>
+                  <option value={USER_ROLES.TOUR_PROVIDER}>Nhà cung cấp tour</option>
+                </select>
+              </div>
+              {touched.role && errors.role && (
+                <span className="input-error-message">{errors.role}</span>
+              )}
+            </div>
+
 
             <div className="password-field">
               <Input

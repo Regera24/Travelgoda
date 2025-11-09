@@ -22,7 +22,8 @@ public class SecurityConfig {
     private static final String[] PUBLIC_APIS = {
             "/api/admin/tour/list",
             "/api/admin/**",
-            "/api/users/**"
+            "/api/users/**",
+            "/auth/**"
     };
 
     private static final String[] ADMIN_APIS = {

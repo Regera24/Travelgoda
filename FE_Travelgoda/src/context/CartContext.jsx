@@ -73,7 +73,7 @@ export const CartProvider = ({ children }) => {
   // Update cart item quantity
   const updateQuantity = useCallback((tourId, quantity) => {
     if (quantity <= 0) {
-      removeFromCart(tourId);
+      setCartItems((prev) => prev.filter(item => item.tour.id !== tourId));
       return;
     }
     
@@ -84,7 +84,7 @@ export const CartProvider = ({ children }) => {
           : item
       )
     );
-  }, [removeFromCart]);
+  }, []);
 
   // Clear cart
   const clearCart = useCallback(() => {

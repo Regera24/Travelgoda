@@ -24,6 +24,9 @@ const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const { getCartCount, wishlist } = useCart();
   const navigate = useNavigate();
+  
+  // Cache cart count to avoid calling function multiple times in render
+  const cartCount = getCartCount();
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -33,9 +36,9 @@ const Header = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
     setUserMenuOpen(false);
+    await logout();
     navigate('/');
   };
 
@@ -87,8 +90,8 @@ const Header = () => {
           {/* Cart */}
           <Link to="/cart" className="action-button">
             <ShoppingCart size={20} />
-            {getCartCount() > 0 && (
-              <span className="action-badge">{getCartCount()}</span>
+            {cartCount > 0 && (
+              <span className="action-badge">{cartCount}</span>
             )}
           </Link>
 
@@ -105,8 +108,8 @@ const Header = () => {
               {userMenuOpen && (
                 <div className="user-dropdown">
                   <div className="user-info">
-                    <p className="user-name">{user?.fullName || user?.email}</p>
-                    <p className="user-email">{user?.email}</p>
+                    <p className="user-name">{user?.username || 'User'}</p>
+                    <p className="user-email">{user?.email || ''}</p>
                   </div>
                   <div className="dropdown-divider"></div>
                   <Link to="/profile" className="dropdown-item" onClick={() => setUserMenuOpen(false)}>

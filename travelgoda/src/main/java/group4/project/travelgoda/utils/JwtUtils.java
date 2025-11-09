@@ -39,7 +39,7 @@ public class JwtUtils {
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(account.getUsername())
-                .issuer("az.schedule.com")
+                .issuer("four.travelgoda.com")
                 .issueTime(new Date())
                 .claim("scope", account.getRole() != null
                         ? account.getRole() : "NEW_USER")
