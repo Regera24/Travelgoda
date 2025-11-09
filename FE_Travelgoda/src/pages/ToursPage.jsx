@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect, use } from 'react';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Search,
   Filter,
@@ -11,111 +11,109 @@ import {
   X,
   Heart
 } from 'lucide-react';
+import { useApi, useCart } from '../hooks';
 import { Button, Card, Input } from '../components';
-import { useCart } from '../hooks';
 import './ToursPage.css';
+import API_ENDPOINTS from '../config/api';
 
 const ToursPage = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { addToWishlist, isInWishlist } = useCart();
+  const api = useApi();
 
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  // States
+  const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
-    destination: searchParams.get('destination') || '',
-    priceRange: '',
-    duration: '',
-    rating: '',
-    category: '',
+    name: '',
+    tourPriceFrom: 0,
+    tourPriceTo: Number.MAX_SAFE_INTEGER,
+    durationDays: '',
+    averageRatingFrom: 0,
+    averageRatingTo: 5,
+    categoryId: '',
   });
-  const [sortBy, setSortBy] = useState('popularity');
+  const [sortBy, setSortBy] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
-  // Mock data - sẽ được thay bằng API calls
-  const tours = [
-    {
-      id: 1,
-      name: 'Du Lịch Phú Quốc 3N2Đ - Khám Phá Đảo Ngọc',
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800',
-      location: 'Phú Quốc, Kiên Giang',
-      price: 3500000,
-      duration: '3 ngày 2 đêm',
-      rating: 4.8,
-      reviews: 127,
-      category: 'Beach',
-      featured: true,
-      status: "PUBLISHED"
-    },
-    {
-      id: 2,
-      name: 'Tour Hạ Long - Sapa 4N3Đ Trọn Gói',
-      image: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800',
-      location: 'Hạ Long - Sapa',
-      price: 5200000,
-      duration: '4 ngày 3 đêm',
-      rating: 4.9,
-      reviews: 203,
-      category: 'Nature',
-      status: "PUBLISHED"
-    },
-    {
-      id: 3,
-      name: 'Đà Nẵng - Hội An - Huế 3N2Đ',
-      image: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800',
-      location: 'Đà Nẵng - Hội An',
-      price: 4200000,
-      duration: '3 ngày 2 đêm',
-      rating: 4.7,
-      reviews: 156,
-      category: 'Cultural',
-      status: "PUBLISHED"
-    },
-    {
-      id: 4,
-      name: 'Bangkok - Pattaya 5N4Đ Siêu Tiết Kiệm',
-      image: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800',
-      location: 'Thái Lan',
-      price: 8900000,
-      duration: '5 ngày 4 đêm',
-      rating: 4.6,
-      reviews: 98,
-      category: 'City',
-      status: "PUBLISHED"
-    },
-    {
-      id: 5,
-      name: 'Đà Lạt Mộng Mơ 2N1Đ',
-      image: 'https://images.unsplash.com/photo-1528127269322-539801943592?w=800',
-      location: 'Đà Lạt, Lâm Đồng',
-      price: 2500000,
-      duration: '2 ngày 1 đêm',
-      rating: 4.5,
-      reviews: 89,
-      category: 'Nature',
-      status: "PUBLISHED"
-    },
-    {
-      id: 6,
-      name: 'Nha Trang Biển Xanh 3N2Đ',
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800',
-      location: 'Nha Trang, Khánh Hòa',
-      price: 3800000,
-      duration: '3 ngày 2 đêm',
-      rating: 4.6,
-      reviews: 142,
-      category: 'Beach',
-      status: "PUBLISHED"
-    },
-  ];
+  const [tours, setTours] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [pagination, setPagination] = useState({
+    totalPages: 0,
+    currentPage: 0,
+    totalElements: 0
+  });
+  const [loading, setLoading] = useState(false);
 
-  const categories = [
-    { value: '', label: 'Tất cả' },
-    { value: 'beach', label: 'Biển đảo' },
-    { value: 'nature', label: 'Thiên nhiên' },
-    { value: 'cultural', label: 'Văn hóa' },
-    { value: 'city', label: 'Thành phố' },
-    { value: 'adventure', label: 'Phiêu lưu' },
-  ];
+  useEffect(() => {
+    const fetchTours = async () => {
+      setLoading(true);
+      try {
+        const guestSearchAndFilterRequest = {
+          name: searchQuery,
+          tourPriceFrom: filters.tourPriceFrom,
+          tourPriceTo: filters.tourPriceTo,
+          durationDays: filters.durationDays,
+          averageRatingFrom: filters.averageRatingFrom,
+          averageRatingTo: filters.averageRatingTo,
+          categoryId: filters.categoryId,
+        }
+
+        const response = await api.post(API_ENDPOINTS.tours.get_tours_by_guest, guestSearchAndFilterRequest, {
+          params: {
+            page: pagination.currentPage,
+            size: 5,
+          }
+        });
+        
+        console.log('Full response:', response);
+        console.log('Response data:', response?.data);
+        console.log('Page data:', response?.data?.data);
+        console.log('Tours:', response?.data?.data?.content);
+        
+        if (response?.data?.data) {
+          // Access the paginated data correctly
+          const pageData = response.data.data;
+          setTours(pageData.content || []);
+          setPagination({
+            totalPages: pageData.totalPages || 0,
+            currentPage: pageData.number || 0,
+            totalElements: pageData.totalElements || 0
+          });
+        } else {
+          setTours([]);
+          setPagination({
+            totalPages: 0,
+            currentPage: 0,
+            totalElements: 0
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching tours:', error);
+        setTours([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTours();
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await api.get(API_ENDPOINTS.categories.list);
+        console.log('Fetched categories:', response);
+        if (response?.data) {
+          setCategories(response.data);
+        } else {
+          setCategories([]);
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        setCategories([]);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const priceRanges = [
     { value: '', label: 'Tất cả mức giá' },
@@ -139,11 +137,13 @@ const ToursPage = () => {
 
   const clearFilters = () => {
     setFilters({
-      destination: '',
-      priceRange: '',
-      duration: '',
-      rating: '',
-      category: '',
+      name: '',
+      tourPriceFrom: 0,
+      tourPriceTo: Number.MAX_SAFE_INTEGER,
+      durationDays: '',
+      averageRatingFrom: 0,
+      averageRatingTo: 5,
+      categoryId: '',
     });
     setSearchQuery('');
   };
@@ -152,6 +152,53 @@ const ToursPage = () => {
     e.stopPropagation();
     addToWishlist(tour);
   };
+
+  useEffect(() => {
+    const fetchTours = async () => {
+      setLoading(true);
+      try {
+        const guestSearchAndFilterRequest = {
+          name: searchQuery || filters.name, // Use searchQuery or filters.name
+          tourPriceFrom: filters.tourPriceFrom,
+          tourPriceTo: filters.tourPriceTo,
+          durationDays: filters.durationDays,
+          averageRatingFrom: filters.averageRatingFrom,
+          averageRatingTo: filters.averageRatingTo,
+          categoryId: filters.categoryId,
+        }
+
+        const response = await api.post(API_ENDPOINTS.tours.get_tours_by_guest, guestSearchAndFilterRequest, {
+          params: {
+            page: pagination.currentPage,
+            size: 5,
+          }
+        });
+        
+        if (response?.data?.data) {
+          const pageData = response.data.data;
+          setTours(pageData.content || []);
+          setPagination({
+            totalPages: pageData.totalPages || 0,
+            currentPage: pageData.number || 0,
+            totalElements: pageData.totalElements || 0
+          });
+        } else {
+          setTours([]);
+          setPagination({
+            totalPages: 0,
+            currentPage: 0,
+            totalElements: 0
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching tours:', error);
+        setTours([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTours();
+  }, [pagination.currentPage, searchQuery, filters]); // Added required dependencies
 
   return (
     <div className="tours-page">
@@ -204,26 +251,37 @@ const ToursPage = () => {
               <Input
                 icon={<MapPin size={18} />}
                 placeholder="Nhập điểm đến..."
-                value={filters.destination}
-                onChange={(e) => handleFilterChange('destination', e.target.value)}
+                value={filters.name}
+                onChange={(e) => handleFilterChange('name', e.target.value)}
               />
             </div>
 
             <div className="filter-group">
               <label className="filter-label">Danh mục</label>
               <div className="filter-options">
-                {categories.map(cat => (
-                  <label key={cat.value} className="filter-option">
+                <label className="filter-option">
+                  <input
+                    type="radio"
+                    name="category"
+                    checked={filters.categoryId === ''}
+                    onChange={(e) => { e.preventDefault(); handleFilterChange('categoryId', ''); }}
+                  />
+                  <span>Tất cả danh mục</span>
+                </label>
+                {categories ? categories.map(cat => (
+                  <label key={cat.id} className="filter-option">
                     <input
                       type="radio"
                       name="category"
-                      value={cat.value}
-                      checked={filters.category === cat.value}
-                      onChange={(e) => handleFilterChange('category', e.target.value)}
+                      value={cat.id}
+                      checked={filters.categoryId === cat.id}
+                      onChange={(e) => handleFilterChange('categoryId', e.target.value)}
                     />
-                    <span>{cat.label}</span>
+                    <span>{cat.name}</span>
                   </label>
-                ))}
+                )) : (
+                  <p>Không có danh mục nào</p>
+                )}
               </div>
             </div>
 
@@ -232,7 +290,25 @@ const ToursPage = () => {
               <select
                 className="filter-select"
                 value={filters.priceRange}
-                onChange={(e) => handleFilterChange('priceRange', e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  let tourPriceFrom = 0;
+                  let tourPriceTo = Number.MAX_SAFE_INTEGER;
+                  
+                  // Parse the price range and set from/to values
+                  if (value) {
+                    const [from, to] = value.split('-');
+                    tourPriceFrom = parseInt(from) || 0;
+                    tourPriceTo = parseInt(to) || Number.MAX_SAFE_INTEGER;
+                  }
+                  
+                  setFilters(prev => ({
+                    ...prev,
+                    priceRange: value,
+                    tourPriceFrom,
+                    tourPriceTo
+                  }));
+                }}
               >
                 {priceRanges.map(range => (
                   <option key={range.value} value={range.value}>
@@ -291,88 +367,118 @@ const ToursPage = () => {
 
           {/* Tours List */}
           <div className="tours-list">
-            <div className="tours-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div className="tours-header">
               <p className="tours-count">
-                Tìm thấy <strong>{tours.length}</strong> tour
+                Tìm thấy <strong>{pagination.totalElements}</strong> tour
               </p>
-              <Button
-                variant="primary"
-                onClick={() => navigate('/admin/manage')}
-                style={{ marginLeft: '10px' }}
-
-              >
-                Quản lý Tour
-              </Button>
             </div>
 
             <div className="tours-grid">
-              {tours.map((tour) => (
-                <Card
-                  key={tour.id}
-                  className="tour-card"
-                  hoverable
-                  clickable
-                  onClick={() => navigate(`/tours/${tour.id}`)}
-                  padding="none"
-                >
-                  <div className="tour-image">
-                    <img src={tour.image} alt={tour.name} />
-                    {tour.featured && <div className="tour-badge">Nổi Bật</div>}
-                    <button
-                      className={`wishlist-btn ${isInWishlist(tour.id) ? 'active' : ''}`}
-                      onClick={(e) => handleWishlist(e, tour)}
-                    >
-                      <Heart size={20} fill={isInWishlist(tour.id) ? '#ef4444' : 'none'} />
-                    </button>
-                  </div>
-                  <div className="tour-content">
-                    <div className="tour-location">
-                      <MapPin size={16} />
-                      <span>{tour.location}</span>
+              {loading ? (
+                <div className="loading-state">
+                  <p>Đang tải tours...</p>
+                </div>
+              ) : Array.isArray(tours) && tours.length > 0 ? (
+                tours.map((tour) => (
+                  <Card
+                    key={tour.id}
+                    className="tour-card"
+                    hoverable
+                    clickable
+                    onClick={() => navigate(`/tours/${tour.id}`)}
+                    padding="none"
+                  >
+                    <div className="tour-image">
+                      <img 
+                        src={`https://source.unsplash.com/random/400x300?${tour.destinations?.[0]?.name.toLowerCase() || 'travel'}`} 
+                        alt={tour.name} 
+                      />
+                      {tour.status === 'PUBLISHED' && <div className="tour-badge">{tour.tourType}</div>}
+                      <button
+                        className={`wishlist-btn ${isInWishlist(tour.id) ? 'active' : ''}`}
+                        onClick={(e) => handleWishlist(e, tour)}
+                      >
+                        <Heart size={20} fill={isInWishlist(tour.id) ? '#ef4444' : 'none'} />
+                      </button>
                     </div>
-                    <h3 className="tour-name">{tour.name}</h3>
-                    <div className="tour-info">
-                      <div className="tour-rating">
-                        <Star size={16} fill="#ffa500" color="#ffa500" />
-                        <span>{tour.rating}</span>
-                        <span className="reviews">({tour.reviews})</span>
-                      </div>
-                      <div className="tour-duration">
-                        <Clock size={16} />
-                        <span>{tour.duration}</span>
-                      </div>
-                    </div>
-                    <div className="tour-footer">
-                      <div className="tour-price">
-                        <span className="price-label">Từ</span>
-                        <span className="price-value">
-                          {tour.price.toLocaleString('vi-VN')}đ
+                    <div className="tour-content">
+                      <div className="tour-location">
+                        <MapPin size={16} />
+                        <span>
+                          {tour.destinations?.map(dest => dest.name).join(', ') || ''}
                         </span>
                       </div>
-                      <Button
-                        variant="primary"
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/tours/${tour.id}`);
-                        }}
-                      >
-                        Xem Chi Tiết
-                      </Button>
+                      <h3 className="tour-name">{tour.name}</h3>
+                      <div className="tour-info">
+                        <div className="tour-rating">
+                          <Star size={16} fill="#ffa500" color="#ffa500" />
+                          <span>{tour.averageRating?.toFixed(1)}</span>
+                          <span className="tour-provider">({tour.tourProvider?.companyName})</span>
+                        </div>
+                        <div className="tour-duration">
+                          <Clock size={16} />
+                          <span>{tour.durationDays} ngày</span>
+                        </div>
+                      </div>
+                      <div className="tour-description">
+                        {tour.description}
+                      </div>
+                      <div className="tour-footer">
+                        <div className="tour-price">
+                          <span className="price-label">Từ</span>
+                          <span className="price-value">
+                            {tour.tourPrice?.toLocaleString('vi-VN')}đ
+                          </span>
+                        </div>
+                        <Button
+                          variant="primary"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/tours/${tour.id}`);
+                          }}
+                        >
+                          Xem Chi Tiết
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                ))
+              ) : (
+                <div className="no-results">
+                  <p>Không tìm thấy tour nào phù hợp với tiêu chí tìm kiếm</p>
+                </div>
+              )}
             </div>
 
             {/* Pagination */}
-            <div className="pagination">
-              <button className="pagination-btn">Trước</button>
-              <button className="pagination-btn active">1</button>
-              <button className="pagination-btn">2</button>
-              <button className="pagination-btn">3</button>
-              <button className="pagination-btn">Sau</button>
-            </div>
+            {tours && tours.length > 0 && pagination.totalPages > 0 && (
+              <div className="pagination">
+                <button
+                  className="pagination-btn"
+                  onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                  disabled={pagination.currentPage === 0}
+                >
+                  Trước
+                </button>
+                {Array.from({ length: pagination.totalPages || 0 }, (_, i) => (
+                  <button
+                    key={i}
+                    className={`pagination-btn ${pagination.currentPage === i ? 'active' : ''}`}
+                    onClick={() => setPagination(prev => ({ ...prev, currentPage: i }))}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  className="pagination-btn"
+                  onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
+                  disabled={pagination.currentPage === pagination.totalPages - 1}
+                >
+                  Sau
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

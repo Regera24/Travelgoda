@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Search, 
@@ -14,22 +14,32 @@ import {
 } from 'lucide-react';
 import { Button, Card } from '../components';
 import './HomePage.css';
+import { useApi } from '../hooks';
+import API_ENDPOINTS, { API_CONFIG } from '../config/api';
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [destination, setDestination] = useState('');
-  const [date, setDate] = useState('');
-  const [travelers, setTravelers] = useState('');
+  const [searchParams, setSearchParams] = useState({
+    destination: '',
+    date: '',
+    travelers: '',
+    category: ''
+  });
 
   const handleSearch = (e) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    if (searchQuery) params.append('q', searchQuery);
-    if (destination) params.append('destination', destination);
-    if (date) params.append('date', date);
-    if (travelers) params.append('travelers', travelers);
-    navigate(`/tours?${params.toString()}`);
+    
+    Object.entries(searchParams).forEach(([key, value]) => {
+      if (value) {
+        params.append(key, value);
+      }
+    });
+
+    // Build path with query string (if any) and send the full filter object in navigation state
+    const queryString = params.toString();
+    const path = `/tours${queryString ? `?${queryString}` : ''}`;
+    navigate(path, { state: searchParams });
   };
 
   // Mock data - sẽ được thay bằng API calls
@@ -147,8 +157,8 @@ const HomePage = () => {
               <input
                 type="text"
                 placeholder="Bạn muốn đi đâu?"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
+                value={searchParams.destination}
+                onChange={(e) => setSearchParams({...searchParams, destination: e.target.value})}
               />
             </div>
             <div className="search-field">
@@ -156,13 +166,16 @@ const HomePage = () => {
               <input
                 type="date"
                 placeholder="Chọn ngày"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
+                value={searchParams.date}
+                onChange={(e) => setSearchParams({...searchParams, date: e.target.value})}
               />
             </div>
             <div className="search-field">
               <Users size={20} />
-              <select value={travelers} onChange={(e) => setTravelers(e.target.value)}>
+              <select 
+                value={searchParams.travelers} 
+                onChange={(e) => setSearchParams({...searchParams, travelers: e.target.value})}
+              >
                 <option value="">Số người</option>
                 <option value="1">1 người</option>
                 <option value="2">2 người</option>
