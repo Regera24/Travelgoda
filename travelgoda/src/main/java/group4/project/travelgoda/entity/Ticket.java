@@ -27,6 +27,13 @@ public class Ticket {
     @JoinColumn(name = "customerId", insertable = false, updatable = false)
     private Customer customer;
     
+    @Column
+    private Long assignedTo;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignedTo", insertable = false, updatable = false)
+    private Staff staff;
+    
     @Column(nullable = false, length = 255)
     private String subject;
     
