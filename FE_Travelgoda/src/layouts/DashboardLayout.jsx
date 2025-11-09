@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Package, 
-  Users, 
+import {
+  LayoutDashboard,
+  Package,
+  Users,
   BookmarkIcon,
   Settings,
   ChevronLeft,
@@ -28,8 +28,14 @@ const DashboardLayout = () => {
   const menuItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/dashboard/tours', icon: Package, label: 'Tours' },
+    ...(user?.role === 'ADMIN'
+      ? [{ path: '/dashboard/tours2', icon: Package, label: 'Tour Pending' }]
+      : []),
     { path: '/dashboard/bookings', icon: BookmarkIcon, label: 'Bookings' },
-    { path: '/dashboard/customers', icon: Users, label: 'Customers' },
+    ...(user?.role === 'ADMIN'
+      ? [{ path: '/dashboard/customers', icon: Users, label: 'Customers' }]
+      : []),
+    //  
     { path: '/dashboard/settings', icon: Settings, label: 'Settings' },
   ];
 
@@ -46,7 +52,7 @@ const DashboardLayout = () => {
             <div className="logo-icon">TG</div>
             {!sidebarCollapsed && <span className="logo-text">TravelGoda</span>}
           </div>
-          <button 
+          <button
             className="sidebar-toggle"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           >

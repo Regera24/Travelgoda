@@ -1,5 +1,5 @@
 // API configuration for TravelGoda
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9999';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 export const API_ENDPOINTS = {
   // Authentication
@@ -13,7 +13,7 @@ export const API_ENDPOINTS = {
     verifyEmail: `${API_BASE_URL}/auth/verify-email`,
     profile: `${API_BASE_URL}/auth/profile`,
   },
-  
+
   // Users
   users: {
     list: `${API_BASE_URL}/users`,
@@ -21,7 +21,7 @@ export const API_ENDPOINTS = {
     update: (id) => `${API_BASE_URL}/users/${id}`,
     delete: (id) => `${API_BASE_URL}/users/${id}`,
   },
-  
+
   // Tours
   tours: {
     list: `${API_BASE_URL}/tours`,
@@ -32,7 +32,7 @@ export const API_ENDPOINTS = {
     categories: `${API_BASE_URL}/tours/categories`,
     byCategory: (categoryId) => `${API_BASE_URL}/tours/category/${categoryId}`,
   },
-  
+
   // Bookings
   bookings: {
     list: `${API_BASE_URL}/bookings`,
@@ -42,7 +42,7 @@ export const API_ENDPOINTS = {
     cancel: (id) => `${API_BASE_URL}/bookings/${id}/cancel`,
     myBookings: `${API_BASE_URL}/bookings/my-bookings`,
   },
-  
+
   // Payments
   payments: {
     create: `${API_BASE_URL}/payments`,
@@ -50,7 +50,7 @@ export const API_ENDPOINTS = {
     methods: `${API_BASE_URL}/payments/methods`,
     history: `${API_BASE_URL}/payments/history`,
   },
-  
+
   // Reviews
   reviews: {
     list: `${API_BASE_URL}/reviews`,
@@ -59,7 +59,7 @@ export const API_ENDPOINTS = {
     delete: (id) => `${API_BASE_URL}/reviews/${id}`,
     byTour: (tourId) => `${API_BASE_URL}/reviews/tour/${tourId}`,
   },
-  
+
   // Promotions
   promotions: {
     list: `${API_BASE_URL}/promotions`,
@@ -67,14 +67,14 @@ export const API_ENDPOINTS = {
     validate: `${API_BASE_URL}/promotions/validate`,
     active: `${API_BASE_URL}/promotions/active`,
   },
-  
+
   // Wishlist
   wishlist: {
     list: `${API_BASE_URL}/wishlist`,
     add: `${API_BASE_URL}/wishlist`,
     remove: (id) => `${API_BASE_URL}/wishlist/${id}`,
   },
-  
+
   // Support
   support: {
     tickets: `${API_BASE_URL}/support/tickets`,
@@ -82,13 +82,18 @@ export const API_ENDPOINTS = {
     ticketDetail: (id) => `${API_BASE_URL}/support/tickets/${id}`,
     faq: `${API_BASE_URL}/support/faq`,
   },
-  
+
   // Notifications
   notifications: {
     list: `${API_BASE_URL}/notifications`,
     markAsRead: (id) => `${API_BASE_URL}/notifications/${id}/read`,
     markAllAsRead: `${API_BASE_URL}/notifications/read-all`,
     delete: (id) => `${API_BASE_URL}/notifications/${id}`,
+  },
+  admin: {
+    tourList: `${API_BASE_URL}/admin/tour/list`,
+    tourChangeStatus: (id, status) =>
+      `${API_BASE_URL}/admin/tour/change-status/${id}?status=${status}`,
   },
 };
 
