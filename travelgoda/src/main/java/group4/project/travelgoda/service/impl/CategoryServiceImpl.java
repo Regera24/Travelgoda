@@ -2,6 +2,7 @@ package group4.project.travelgoda.service.impl;
 
 import group4.project.travelgoda.dto.response.CategoryResponse;
 import group4.project.travelgoda.entity.Category;
+import group4.project.travelgoda.mapper.CategoryMapper;
 import group4.project.travelgoda.repository.CategoryRepository;
 import group4.project.travelgoda.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public List<CategoryResponse> getAllCategory() {
@@ -24,5 +26,11 @@ public class CategoryServiceImpl implements CategoryService {
                 .name(category.getName())
                 .description(category.getDescription())
                 .build()).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CategoryResponse> getAllCategories() {
+        List<Category> categories = categoryRepository.findAll();
+        return categoryMapper.toResponseList(categories);
     }
 }

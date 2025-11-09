@@ -1,12 +1,16 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { MainLayout, DashboardLayout } from '../layouts';
-import {
-  HomePage,
-  ToursPage,
+import { 
+  HomePage, 
+  ToursPage, 
   TourDetailPage,
   LoginPage,
   RegisterPage,
   CartPage,
+  TourGuideListPage,
+  TourGuideDetailPage,
+  FinancialReportPage,
+  CustomerSupportPage,
 } from '../pages';
 import {
   DestinationsPage,
@@ -99,12 +103,34 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'admin/manage',
-        element: (
-          <DashboardLayout />
-        ),
+        path: 'financial-report',
+        element: <FinancialReportPage />,
+      },
+      {
+        path: 'support',
+        element: <CustomerSupportPage />,
       },
     ],
+  },
+  {
+    path: '/tour-guide',
+    element: <MainLayout />,
+    children: [
+      {
+        path: 'tours',
+        element: <TourGuideListPage />,
+      },
+      {
+        path: 'tours/:tourId',
+        element: <TourGuideDetailPage />,
+      },
+    ],
+  },
+  {
+    path: 'admin/manage',
+    element: (
+        <DashboardLayout />
+    ),
   },
   {
     path: '/dashboard',

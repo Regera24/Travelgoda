@@ -1,5 +1,10 @@
 package group4.project.travelgoda.dto.response;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,9 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class CategoryResponse {
-
-    int id;
-    String name;
-    String description;
-
+    private Long id;
+    private String name;
+    private String description;
 }
