@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { STORAGE_KEYS, USER_ROLES } from '../config/constants';
+import authService from '../services/authService';
 
 export const AuthContext = createContext(null);
 
@@ -15,7 +16,8 @@ export const AuthProvider = ({ children }) => {
       try {
         const storedUser = localStorage.getItem(STORAGE_KEYS.USER_DATA);
         const storedToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-        
+        console.log('Loaded user data from localStorage:', { storedUser, storedToken });
+
         if (storedUser && storedToken) {
           setUser(JSON.parse(storedUser));
           setAccessToken(storedToken);
@@ -23,7 +25,10 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         console.error('Error loading user data:', error);
-        logout();
+        // Clear invalid data instead of calling logout
+        localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+        localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
       } finally {
         setIsLoading(false);
       }
@@ -37,11 +42,11 @@ export const AuthProvider = ({ children }) => {
     try {
       localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
       localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
-      
+
       setUser(userData);
       setAccessToken(token);
       setIsAuthenticated(true);
-      
+
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
@@ -50,14 +55,27 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Logout function
-  const logout = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEYS.USER_DATA);
-    localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
-    
-    setUser(null);
-    setAccessToken(null);
-    setIsAuthenticated(false);
+  const logout = useCallback(async () => {
+    try {
+      const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+
+      // Call backend logout API if token exists
+      if (token) {
+        await authService.logout(token);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Continue with local logout even if API call fails
+    } finally {
+      // Clear local storage and state
+      localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+      localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+
+      setUser(null);
+      setAccessToken(null);
+      setIsAuthenticated(false);
+    }
   }, []);
 
   // Update user profile
@@ -74,6 +92,7 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is admin
   const isAdmin = useCallback(() => {
+    console.log('Checking if user is admin:', user);
     return user?.role === USER_ROLES.ADMIN;
   }, [user]);
 

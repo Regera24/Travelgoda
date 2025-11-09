@@ -5,6 +5,11 @@ import {
   Filter,
   MapPin,
   Star,
+import {
+  Search,
+  Filter,
+  MapPin,
+  Star,
   Clock,
   DollarSign,
   ChevronDown,
@@ -117,6 +122,7 @@ const ToursPage = () => {
           </div>
 
           <button
+          <button
             className="filter-toggle-btn"
             onClick={() => setShowFilters(!showFilters)}
           >
@@ -124,6 +130,7 @@ const ToursPage = () => {
             Bộ Lọc
           </button>
 
+          <select
           <select
             className="sort-select"
             value={sortBy}
@@ -178,6 +185,7 @@ const ToursPage = () => {
             <div className="filter-group">
               <label className="filter-label">Mức giá</label>
               <select
+              <select
                 className="filter-select"
                 value={filters.priceRange}
                 onChange={(e) => handleFilterChange('priceRange', e.target.value)}
@@ -192,6 +200,7 @@ const ToursPage = () => {
 
             <div className="filter-group">
               <label className="filter-label">Thời gian</label>
+              <select
               <select
                 className="filter-select"
                 value={filters.duration}
@@ -231,6 +240,9 @@ const ToursPage = () => {
             <Button
               variant="outline"
               fullWidth
+            <Button
+              variant="outline"
+              fullWidth
               onClick={clearFilters}
             >
               Xóa Bộ Lọc
@@ -239,7 +251,7 @@ const ToursPage = () => {
 
           {/* Tours List */}
           <div className="tours-list">
-            <div className="tours-header">
+            <div className="tours-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <p className="tours-count">
                 Tìm thấy <strong>{tours
                   .filter(tour => tour.status === 'PUBLISHED')
@@ -250,6 +262,14 @@ const ToursPage = () => {
                     return true;
                   }).length}</strong> tour
               </p>
+              <Button
+                variant="primary"
+                onClick={() => navigate('/admin/manage')}
+                style={{ marginLeft: '10px' }}
+
+              >
+                Quản lý Tour
+              </Button>
             </div>
 
             <div className="tours-grid">

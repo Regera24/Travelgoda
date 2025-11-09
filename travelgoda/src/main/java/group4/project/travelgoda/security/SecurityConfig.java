@@ -20,6 +20,10 @@ import javax.crypto.spec.SecretKeySpec;
 @Configuration
 public class SecurityConfig {
     private static final String[] PUBLIC_APIS = {
+            "/admin/tour/list",
+            "/admin/**",
+            "/users/**",
+            "/auth/**",
             "/tours/**",
     };
 

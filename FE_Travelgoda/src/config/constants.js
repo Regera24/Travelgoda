@@ -18,10 +18,9 @@ export const STORAGE_KEYS = {
 
 // User roles
 export const USER_ROLES = {
-  ADMIN: 'admin',
-  CUSTOMER: 'customer',
-  TOUR_PROVIDER: 'tour_provider',
-  SUPPORT: 'support',
+  ADMIN: 'ADMIN',
+  CUSTOMER: 'CUSTOMER',
+  TOUR_PROVIDER: 'TOUR_PROVIDER',
 };
 
 // Booking status

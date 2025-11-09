@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Package, 
-  Users, 
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  Package,
+  Users,
   BookmarkIcon,
   Settings,
   ChevronLeft,
@@ -17,13 +17,25 @@ import './DashboardLayout.css';
 const DashboardLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   const menuItems = [
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/dashboard/tours', icon: Package, label: 'Tours' },
+    ...(user?.role === 'ADMIN'
+      ? [{ path: '/dashboard/tours2', icon: Package, label: 'Tour Pending' }]
+      : []),
     { path: '/dashboard/bookings', icon: BookmarkIcon, label: 'Bookings' },
-    { path: '/dashboard/customers', icon: Users, label: 'Customers' },
+    ...(user?.role === 'ADMIN'
+      ? [{ path: '/dashboard/customers', icon: Users, label: 'Customers' }]
+      : []),
+    //  
     { path: '/dashboard/settings', icon: Settings, label: 'Settings' },
   ];
 
@@ -40,7 +52,7 @@ const DashboardLayout = () => {
             <div className="logo-icon">TG</div>
             {!sidebarCollapsed && <span className="logo-text">TravelGoda</span>}
           </div>
-          <button 
+          <button
             className="sidebar-toggle"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           >
@@ -65,7 +77,7 @@ const DashboardLayout = () => {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="sidebar-item" onClick={logout}>
+          <button className="sidebar-item" onClick={handleLogout}>
             <LogOut size={20} />
             {!sidebarCollapsed && <span>Logout</span>}
           </button>
@@ -83,9 +95,9 @@ const DashboardLayout = () => {
               <span className="notification-badge">3</span>
             </button>
             <div className="user-info">
-              <span className="user-name">{user?.fullName || user?.email}</span>
+              <span className="user-name">{user?.username || 'User'}</span>
               <div className="user-avatar">
-                {user?.fullName?.charAt(0).toUpperCase() || 'U'}
+                {user?.username?.charAt(0).toUpperCase() || 'U'}
               </div>
             </div>
           </div>

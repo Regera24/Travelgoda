@@ -77,11 +77,14 @@ public class Tour {
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-    
+
+    @Column(nullable = false)
+    private Double tourPrice;
+
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<TourDestination> tourDestinations = new HashSet<>();
-    
+
     public enum TourStatus {
         DRAFT,
         PUBLISHED,

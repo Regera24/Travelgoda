@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Search, 
-  User, 
-  Heart, 
-  ShoppingCart, 
-  Menu, 
+import {
+  Search,
+  User,
+  Heart,
+  ShoppingCart,
+  Menu,
   X,
   LogOut,
   Settings,
@@ -20,10 +20,13 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const { isAuthenticated, user, logout } = useAuth();
   const { getCartCount, wishlist } = useCart();
   const navigate = useNavigate();
+
+  // Cache cart count to avoid calling function multiple times in render
+  const cartCount = getCartCount();
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -33,9 +36,9 @@ const Header = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
     setUserMenuOpen(false);
+    await logout();
     navigate('/');
   };
 
@@ -87,26 +90,33 @@ const Header = () => {
           {/* Cart */}
           <Link to="/cart" className="action-button">
             <ShoppingCart size={20} />
-            {getCartCount() > 0 && (
-              <span className="action-badge">{getCartCount()}</span>
+            {cartCount > 0 && (
+              <span className="action-badge">{cartCount}</span>
             )}
           </Link>
+
+
+
 
           {/* User Menu */}
           {isAuthenticated ? (
             <div className="user-menu">
+
               <button
                 className="action-button user-button"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
               >
                 <User size={20} />
+
               </button>
-              
+
+
+
               {userMenuOpen && (
                 <div className="user-dropdown">
                   <div className="user-info">
-                    <p className="user-name">{user?.fullName || user?.email}</p>
-                    <p className="user-email">{user?.email}</p>
+                    <p className="user-name">{user?.username || 'User'}</p>
+                    <p className="user-email">{user?.email || ''}</p>
                   </div>
                   <div className="dropdown-divider"></div>
                   <Link to="/profile" className="dropdown-item" onClick={() => setUserMenuOpen(false)}>
@@ -128,6 +138,7 @@ const Header = () => {
                   </button>
                 </div>
               )}
+
             </div>
           ) : (
             <div className="auth-buttons">
@@ -138,6 +149,15 @@ const Header = () => {
                 Đăng Ký
               </Button>
             </div>
+          )}
+          {isAuthenticated && (
+            <Button
+              variant="success"
+              onClick={() => navigate('/admin/manage')}
+              style={{ marginLeft: '10px' }}
+            >
+              Quản lý
+            </Button>
           )}
 
           {/* Mobile Menu Toggle */}
@@ -164,7 +184,7 @@ const Header = () => {
               Liên Hệ
             </Link>
           </nav>
-          
+
           {!isAuthenticated && (
             <div className="mobile-auth-buttons">
               <Button variant="outline" fullWidth onClick={() => {

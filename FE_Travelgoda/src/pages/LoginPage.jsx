@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { User, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button, Input } from '../components';
 import { useAuth } from '../hooks';
 import { useForm } from '../hooks';
-import { validateEmail, validateRequired } from '../utils/validators';
+import { validateRequired } from '../utils/validators';
+import authService from '../services/authService';
 import './AuthPages.css';
 
 const LoginPage = () => {
@@ -18,12 +19,12 @@ const LoginPage = () => {
   const from = location.state?.from?.pathname || '/';
 
   const validationRules = {
-    email: (value) => validateRequired(value) || validateEmail(value),
+    username: (value) => validateRequired(value),
     password: (value) => validateRequired(value),
   };
 
   const { values, errors, touched, handleChange, handleBlur, handleSubmit } = useForm(
-    { email: '', password: '' },
+    { username: '', password: '' },
     validationRules
   );
 
@@ -32,19 +33,24 @@ const LoginPage = () => {
     setError('');
     
     try {
-      // Mock login - sẽ được thay bằng API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Call backend API
+      const result = await authService.login(values.username, values.password);
       
-      // Simulate login
-      login({
-        email: values.email,
-        fullName: 'User Name',
-        role: 'customer',
-      });
-      
-      navigate(from, { replace: true });
-    } catch {
-      setError('Email hoặc mật khẩu không đúng');
+      if (result.success && result.token) {
+        // Store user data and login
+        const userData = {
+          username: values.username,
+          role: 'customer', // Will be decoded from token in future
+        };
+        
+        await login(userData, result.token);
+        navigate(from, { replace: true });
+      } else {
+        setError(result.message || 'Tên đăng nhập hoặc mật khẩu không đúng');
+      }
+    } catch (err) {
+      setError('Đăng nhập thất bại. Vui lòng thử lại.');
+      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }
@@ -71,15 +77,15 @@ const LoginPage = () => {
             )}
 
             <Input
-              label="Email"
-              type="email"
-              name="email"
-              placeholder="your@email.com"
-              icon={<Mail size={20} />}
-              value={values.email}
+              label="Tên đăng nhập"
+              type="text"
+              name="username"
+              placeholder="username"
+              icon={<User size={20} />}
+              value={values.username}
               onChange={handleChange}
               onBlur={handleBlur}
-              error={touched.email && errors.email}
+              error={touched.username && errors.username}
               required
               fullWidth
             />

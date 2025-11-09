@@ -1,4 +1,6 @@
 import React from 'react';
+import TourManagement from './TourManagement';
+import UserManagement from './UserManagement';
 import TourProviderPage from './TourProviderPage';
 
 // Placeholder components for pages not yet implemented
@@ -70,6 +72,13 @@ export const DashboardToursPage = () => (
   <TourProviderPage />
 );
 
+export const DashboardToursPendingPage = () => (
+  <div style={{ padding: '2rem' }}>
+    <h1>Dashboard Tours Pending</h1>
+    <TourManagement />
+  </div>
+);
+
 export const DashboardBookingsPage = () => (
   <div style={{ padding: '2rem' }}>
     <h1>Dashboard Bookings</h1>
@@ -80,7 +89,7 @@ export const DashboardBookingsPage = () => (
 export const DashboardCustomersPage = () => (
   <div style={{ padding: '2rem' }}>
     <h1>Dashboard Customers</h1>
-    <p>Coming soon...</p>
+    <UserManagement />
   </div>
 );
 

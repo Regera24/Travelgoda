@@ -50,7 +50,8 @@ public class User {
         CUSTOMER,
         TOUR_PROVIDER,
         TOUR_GUIDE,
-        STAFF
+        STAFF,
+        ADMIN
     }
     
     public enum UserStatus {

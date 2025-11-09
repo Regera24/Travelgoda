@@ -1,0 +1,72 @@
+.tmn-page {
+    padding: 16px;
+}
+
+.tmn-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.tmn-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.tmn-search {
+    padding: 8px 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    min-width: 240px;
+}
+
+.tmn-table-wrapper {
+    overflow: auto;
+}
+
+.tmn-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.tmn-table th,
+.tmn-table td {
+    border-bottom: 1px solid #eef2f7;
+    padding: 10px;
+    vertical-align: top;
+}
+
+.tmn-strong {
+    font-weight: 600;
+}
+
+.tmn-desc {
+    max-width: 420px;
+    color: #475569;
+}
+
+.tmn-status {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    background: #f1f5f9;
+}
+
+.tmn-status.published {
+    background: #dcfce7;
+}
+
+.tmn-status.draft {
+    background: #fde68a;
+}
+
+.tmn-status.unpublished {
+    background: #e2e8f0;
+}
+
+.tmn-error {
+    color: #ef4444;
+}
