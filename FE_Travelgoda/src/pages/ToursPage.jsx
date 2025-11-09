@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { 
-  Search, 
-  Filter, 
-  MapPin, 
-  Star, 
+import {
+  Search,
+  Filter,
+  MapPin,
+  Star,
   Clock,
   DollarSign,
   ChevronDown,
@@ -14,6 +14,7 @@ import {
 import { Button, Card, Input } from '../components';
 import { useCart } from '../hooks';
 import './ToursPage.css';
+import API_ENDPOINTS from '../config/api';
 
 const ToursPage = () => {
   const navigate = useNavigate();
@@ -32,75 +33,28 @@ const ToursPage = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   // Mock data - sẽ được thay bằng API calls
-  const tours = [
-    {
-      id: 1,
-      name: 'Du Lịch Phú Quốc 3N2Đ - Khám Phá Đảo Ngọc',
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800',
-      location: 'Phú Quốc, Kiên Giang',
-      price: 3500000,
-      duration: '3 ngày 2 đêm',
-      rating: 4.8,
-      reviews: 127,
-      category: 'Beach',
-      featured: true,
-    },
-    {
-      id: 2,
-      name: 'Tour Hạ Long - Sapa 4N3Đ Trọn Gói',
-      image: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800',
-      location: 'Hạ Long - Sapa',
-      price: 5200000,
-      duration: '4 ngày 3 đêm',
-      rating: 4.9,
-      reviews: 203,
-      category: 'Nature',
-    },
-    {
-      id: 3,
-      name: 'Đà Nẵng - Hội An - Huế 3N2Đ',
-      image: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=800',
-      location: 'Đà Nẵng - Hội An',
-      price: 4200000,
-      duration: '3 ngày 2 đêm',
-      rating: 4.7,
-      reviews: 156,
-      category: 'Cultural',
-    },
-    {
-      id: 4,
-      name: 'Bangkok - Pattaya 5N4Đ Siêu Tiết Kiệm',
-      image: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=800',
-      location: 'Thái Lan',
-      price: 8900000,
-      duration: '5 ngày 4 đêm',
-      rating: 4.6,
-      reviews: 98,
-      category: 'City',
-    },
-    {
-      id: 5,
-      name: 'Đà Lạt Mộng Mơ 2N1Đ',
-      image: 'https://images.unsplash.com/photo-1528127269322-539801943592?w=800',
-      location: 'Đà Lạt, Lâm Đồng',
-      price: 2500000,
-      duration: '2 ngày 1 đêm',
-      rating: 4.5,
-      reviews: 89,
-      category: 'Nature',
-    },
-    {
-      id: 6,
-      name: 'Nha Trang Biển Xanh 3N2Đ',
-      image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800',
-      location: 'Nha Trang, Khánh Hòa',
-      price: 3800000,
-      duration: '3 ngày 2 đêm',
-      rating: 4.6,
-      reviews: 142,
-      category: 'Beach',
-    },
-  ];
+  const [tours, setTours] = useState([]);
+
+  useEffect(() => {
+    fetch(API_ENDPOINTS.tours.list, {
+      // headers: {
+      //   Authorization: `Bearer ${token}`,
+      // },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.code === 200) {
+          // Hardcode ảnh cho mỗi tour
+          const toursWithImages = data.data.content.map(tour => ({
+            ...tour,
+            image: tour.image || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800',
+          }));
+          setTours(toursWithImages);
+        }
+      })
+      .catch((error) => console.error("Error fetching tours:", error))
+  }, []);
+
 
   const categories = [
     { value: '', label: 'Tất cả' },
@@ -162,7 +116,7 @@ const ToursPage = () => {
             />
           </div>
 
-          <button 
+          <button
             className="filter-toggle-btn"
             onClick={() => setShowFilters(!showFilters)}
           >
@@ -170,7 +124,7 @@ const ToursPage = () => {
             Bộ Lọc
           </button>
 
-          <select 
+          <select
             className="sort-select"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
@@ -223,7 +177,7 @@ const ToursPage = () => {
 
             <div className="filter-group">
               <label className="filter-label">Mức giá</label>
-              <select 
+              <select
                 className="filter-select"
                 value={filters.priceRange}
                 onChange={(e) => handleFilterChange('priceRange', e.target.value)}
@@ -238,7 +192,7 @@ const ToursPage = () => {
 
             <div className="filter-group">
               <label className="filter-label">Thời gian</label>
-              <select 
+              <select
                 className="filter-select"
                 value={filters.duration}
                 onChange={(e) => handleFilterChange('duration', e.target.value)}
@@ -274,9 +228,9 @@ const ToursPage = () => {
               </div>
             </div>
 
-            <Button 
-              variant="outline" 
-              fullWidth 
+            <Button
+              variant="outline"
+              fullWidth
               onClick={clearFilters}
             >
               Xóa Bộ Lọc
@@ -287,68 +241,100 @@ const ToursPage = () => {
           <div className="tours-list">
             <div className="tours-header">
               <p className="tours-count">
-                Tìm thấy <strong>{tours.length}</strong> tour
+                Tìm thấy <strong>{tours
+                  .filter(tour => tour.status === 'PUBLISHED')
+                  .filter(tour => {
+                    if (searchQuery) {
+                      return tour.name.toLowerCase().includes(searchQuery.toLowerCase());
+                    }
+                    return true;
+                  }).length}</strong> tour
               </p>
             </div>
 
             <div className="tours-grid">
-              {tours.map((tour) => (
-                <Card
-                  key={tour.id}
-                  className="tour-card"
-                  hoverable
-                  clickable
-                  onClick={() => navigate(`/tours/${tour.id}`)}
-                  padding="none"
-                >
-                  <div className="tour-image">
-                    <img src={tour.image} alt={tour.name} />
-                    {tour.featured && <div className="tour-badge">Nổi Bật</div>}
-                    <button 
-                      className={`wishlist-btn ${isInWishlist(tour.id) ? 'active' : ''}`}
-                      onClick={(e) => handleWishlist(e, tour)}
-                    >
-                      <Heart size={20} fill={isInWishlist(tour.id) ? '#ef4444' : 'none'} />
-                    </button>
-                  </div>
-                  <div className="tour-content">
-                    <div className="tour-location">
-                      <MapPin size={16} />
-                      <span>{tour.location}</span>
-                    </div>
-                    <h3 className="tour-name">{tour.name}</h3>
-                    <div className="tour-info">
-                      <div className="tour-rating">
-                        <Star size={16} fill="#ffa500" color="#ffa500" />
-                        <span>{tour.rating}</span>
-                        <span className="reviews">({tour.reviews})</span>
-                      </div>
-                      <div className="tour-duration">
-                        <Clock size={16} />
-                        <span>{tour.duration}</span>
-                      </div>
-                    </div>
-                    <div className="tour-footer">
-                      <div className="tour-price">
-                        <span className="price-label">Từ</span>
-                        <span className="price-value">
-                          {tour.price.toLocaleString('vi-VN')}đ
-                        </span>
-                      </div>
-                      <Button 
-                        variant="primary" 
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/tours/${tour.id}`);
-                        }}
+              {tours
+                .filter(tour => tour.status === 'PUBLISHED')
+                .filter(tour => {
+                  // Tìm kiếm theo tên tour (không phân biệt hoa thường)
+                  if (searchQuery) {
+                    return tour.name.toLowerCase().includes(searchQuery.toLowerCase());
+                  }
+                  return true;
+                })
+                .sort((a, b) => {
+                  // Sắp xếp theo tiêu chí đã chọn
+                  switch (sortBy) {
+                    case 'price-low':
+                      return a.tourPrice - b.tourPrice;
+                    case 'price-high':
+                      return b.tourPrice - a.tourPrice;
+                    case 'rating':
+                      return b.averageRating - a.averageRating;
+                    case 'newest':
+                      return new Date(b.createdAt) - new Date(a.createdAt);
+                    case 'popularity':
+                    default:
+                      return b.reviews - a.reviews; // Sắp xếp theo số lượng đánh giá
+                  }
+                })
+                .map((tour) => (
+                  <Card
+                    key={tour.id}
+                    className="tour-card"
+                    hoverable
+                    clickable
+                    onClick={() => navigate(`/tours/${tour.id}`)}
+                    padding="none"
+                  >
+                    <div className="tour-image">
+                      <img src={tour.image} alt={tour.name} />
+                      {tour.featured && <div className="tour-badge">Nổi Bật</div>}
+                      <button
+                        className={`wishlist-btn ${isInWishlist(tour.id) ? 'active' : ''}`}
+                        onClick={(e) => handleWishlist(e, tour)}
                       >
-                        Xem Chi Tiết
-                      </Button>
+                        <Heart size={20} fill={isInWishlist(tour.id) ? '#ef4444' : 'none'} />
+                      </button>
                     </div>
-                  </div>
-                </Card>
-              ))}
+                    <div className="tour-content">
+                      <div className="tour-location">
+                        <MapPin size={16} />
+                        <span>{tour.location}</span>
+                      </div>
+                      <h3 className="tour-name">{tour.name}</h3>
+                      <div className="tour-info">
+                        <div className="tour-rating">
+                          <Star size={16} fill="#ffa500" color="#ffa500" />
+                          <span>{tour.averageRating}</span>
+                          <span className="reviews">({tour.reviews})</span>
+                        </div>
+                        <div className="tour-duration">
+                          <Clock size={16} />
+                          <span>{tour.durationDays} ngày</span>
+                        </div>
+                      </div>
+                      <div className="tour-footer">
+                        <div className="tour-price">
+                          <span className="price-label">Từ</span>
+                          <span className="price-value">
+                            {tour.tourPrice.toLocaleString('vi-VN')}đ
+                          </span>
+                        </div>
+                        <Button
+                          variant="primary"
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/tours/${tour.id}`);
+                          }}
+                        >
+                          Xem Chi Tiết
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
             </div>
 
             {/* Pagination */}

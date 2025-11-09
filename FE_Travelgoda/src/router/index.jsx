@@ -41,7 +41,7 @@ const router = createBrowserRouter([
         element: <ToursPage />,
       },
       {
-        path: 'tours/:id',
+        path: '/tours/:id',
         element: <TourDetailPage />,
       },
       {

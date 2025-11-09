@@ -1,4 +1,5 @@
 import React from 'react';
+import TourProviderPage from './TourProviderPage';
 
 // Placeholder components for pages not yet implemented
 export const DestinationsPage = () => (
@@ -66,10 +67,7 @@ export const DashboardHomePage = () => (
 );
 
 export const DashboardToursPage = () => (
-  <div style={{ padding: '2rem' }}>
-    <h1>Dashboard Tours</h1>
-    <p>Coming soon...</p>
-  </div>
+  <TourProviderPage />
 );
 
 export const DashboardBookingsPage = () => (

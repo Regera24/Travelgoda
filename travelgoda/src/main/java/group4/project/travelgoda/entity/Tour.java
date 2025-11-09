@@ -42,12 +42,18 @@ public class Tour {
     
     @Column(nullable = false, columnDefinition = "nvarchar(max)")
     private String description;
+
+    @Column(columnDefinition = "nvarchar(max)")
+    private String image;
     
     @Column(columnDefinition = "nvarchar(max)")
     private String itinerary;
     
     @Column(length = 100)
     private String tourType;
+
+    @Column(nullable = false)
+    private double tourPrice;
     
     @Column(nullable = false)
     private Integer durationDays;
@@ -79,6 +85,6 @@ public class Tour {
     public enum TourStatus {
         DRAFT,
         PUBLISHED,
-        ARCHIVED
+        UNPUBLISHED
     }
 }
