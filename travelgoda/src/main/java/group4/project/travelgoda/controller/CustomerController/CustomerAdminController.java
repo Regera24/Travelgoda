@@ -3,7 +3,6 @@ package group4.project.travelgoda.controller.CustomerController;
 import group4.project.travelgoda.dto.userDTO.UserDTO;
 import group4.project.travelgoda.service.ADMIN.CustomerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +11,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
-public class CustomerController {
+public class CustomerAdminController {
 
     private final CustomerService customerService;
 
