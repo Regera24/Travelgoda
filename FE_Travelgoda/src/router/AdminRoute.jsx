@@ -10,14 +10,14 @@ const AdminRoute = ({ children }) => {
     return <Loading fullScreen text="Đang tải..." />;
   }
 
-  // if (!isAuthenticated) {
-  //   return <Navigate to="/login" replace />;
-  // }
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
   // Check if user has admin or tour provider role
-  // if (!isAdmin() && !isTourProvider()) {
-  //   return <Navigate to="/" replace />;
-  // }
+  if (!isAdmin() && !isTourProvider()) {
+    return <Navigate to="/" replace />;
+  }
 
   return children;
 };

@@ -16,7 +16,8 @@ export const AuthProvider = ({ children }) => {
       try {
         const storedUser = localStorage.getItem(STORAGE_KEYS.USER_DATA);
         const storedToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-        
+        console.log('Loaded user data from localStorage:', { storedUser, storedToken });
+
         if (storedUser && storedToken) {
           setUser(JSON.parse(storedUser));
           setAccessToken(storedToken);
@@ -41,11 +42,11 @@ export const AuthProvider = ({ children }) => {
     try {
       localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
       localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
-      
+
       setUser(userData);
       setAccessToken(token);
       setIsAuthenticated(true);
-      
+
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
@@ -57,7 +58,7 @@ export const AuthProvider = ({ children }) => {
   const logout = useCallback(async () => {
     try {
       const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-      
+
       // Call backend logout API if token exists
       if (token) {
         await authService.logout(token);
@@ -70,7 +71,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem(STORAGE_KEYS.USER_DATA);
       localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
       localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
-      
+
       setUser(null);
       setAccessToken(null);
       setIsAuthenticated(false);
@@ -91,6 +92,7 @@ export const AuthProvider = ({ children }) => {
 
   // Check if user is admin
   const isAdmin = useCallback(() => {
+    console.log('Checking if user is admin:', user);
     return user?.role === USER_ROLES.ADMIN;
   }, [user]);
 

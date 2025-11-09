@@ -35,5 +35,5 @@ open:
     serverUrl: http://localhost:9999
     serverName: Server Test
 server:
-  port: 8000
+  port: 8080
 
